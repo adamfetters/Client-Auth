@@ -2,7 +2,7 @@ import axios from 'axios';
 // Fixes an issue with axios and express-session where sessions
 // would not persist between routes
 axios.defaults.withCredentials = true;
-const ROOT_URL = 'http://localhost:3000';
+const ROOT_URL = 'http://localhost:5000';
 
 export const USER_REGISTERED = 'USER_REGISTERED';
 export const USER_AUTHENTICATED = 'USER_AUTHENTICATED';
@@ -11,15 +11,16 @@ export const AUTHENTICATION_ERROR = 'AUTHENTICATION_ERROR';
 export const GET_USERS = 'GET_USERS';
 export const CHECK_IF_AUTHENTICATED = 'CHECK_IF_AUTHENTICATED';
 
-export const authError = error => {
+export const authError = (error) => {
   return {
     type: AUTHENTICATION_ERROR,
     payload: error
   };
 };
 
-export const register = (username, password, confirmPassword, history) => {
-  return dispatch => {
+export const register = (userObject, history) => {
+  const { username, password, confirmPassword } = userObject;
+  return (dispatch) => {
     if (password !== confirmPassword) {
       dispatch(authError('Passwords do not match'));
       return;
@@ -39,7 +40,7 @@ export const register = (username, password, confirmPassword, history) => {
 };
 
 export const login = (username, password, history) => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(`${ROOT_URL}/login`, { username, password })
       .then(() => {
@@ -55,7 +56,7 @@ export const login = (username, password, history) => {
 };
 
 export const logout = () => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .post(`${ROOT_URL}/logout`)
       .then(() => {
@@ -70,10 +71,10 @@ export const logout = () => {
 };
 
 export const getUsers = () => {
-  return dispatch => {
+  return (dispatch) => {
     axios
       .get(`${ROOT_URL}/restricted/users`)
-      .then(response => {
+      .then((response) => {
         dispatch({
           type: GET_USERS,
           payload: response.data
